@@ -1,6 +1,6 @@
 import { IsEmail, IsString, Length } from "class-validator";
-import { stringValidationMessage } from "../../common/const/validation_message/stirng_validation.message.const";
-import { lengthValidationMessage } from "../../common/const/validation_message/number_validation.message.const";
+import { stringValidationMessage } from "../../common/validation_message/stirng_validation.message.const";
+import { lengthValidationMessage } from "../../common/validation_message/number_validation.message.const";
 
 export class RegisterAuthDto {
     @IsEmail({}, {

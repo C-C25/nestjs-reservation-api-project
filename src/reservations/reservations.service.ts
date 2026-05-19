@@ -6,6 +6,7 @@ import { CreateReservationDto } from './dto/create_reservation.dto';
 import { SpacesService } from '../spaces/spaces.service';
 import { UpdateReservationStatusDto } from './dto/update_reservation.status.dto';
 import { ReservationStatusEnum } from './const/status.enum.const';
+import { ChatsService } from '../chats/chats.service';
 
 @Injectable()
 export class ReservationsService {
@@ -13,12 +14,13 @@ export class ReservationsService {
         @InjectRepository(ReservationsEntity)
         private readonly reservationRepo: Repository<ReservationsEntity>,
         private readonly spacesService: SpacesService,
+        private readonly chatsService: ChatsService,
     ) { }
 
-    async findReservation(){
+    async findReservation() {
         return this.reservationRepo.find();
     }
-    
+
 
     async createReservation(userId: number, spaceId: number, dto: CreateReservationDto) {
         await this.spacesService.findOneSpaces(spaceId);
@@ -45,12 +47,16 @@ export class ReservationsService {
         }
 
         if (reservation.status === ReservationStatusEnum.COMPLETED) {
-            throw new BadRequestException("확정된 예약은 취소 변경 시간 추가를 이용 할수 없습니다.");
+            throw new BadRequestException("완료된 예약은 상태를 변경할 수 없습니다.");
         }
 
         reservation.status = dto.status;
 
         const newReservation = await this.reservationRepo.save(reservation);
+        
+        if (reservation.status === ReservationStatusEnum.CONFIRMED) {
+            await this.chatsService.createChatRoom(reservationId);
+        }
 
         return newReservation;
     }

@@ -10,9 +10,15 @@ import { UpdateSpacesDto } from './dto/update.spaces.dto';
 export class SpacesController {
   constructor(private readonly spacesService: SpacesService) { }
 
+  @Get()
+  @IsPublic()
+  getSpace(){
+    return this.spacesService.findSpaces();
+  }
+
   @Get(":id")
   @IsPublic()
-  getSpace(
+  getSpaces(
     @Param("id", ParseIntPipe) id: number,
   ) {
     return this.spacesService.findOneSpaces(id);
