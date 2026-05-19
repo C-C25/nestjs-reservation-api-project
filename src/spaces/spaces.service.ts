@@ -4,13 +4,27 @@ import { Code, Repository } from 'typeorm';
 import { SpacesEntity } from './entities/spaces.entity';
 import { CreateSpaceDto } from './dto/create_space.dto';
 import { UpdateSpacesDto } from './dto/update.spaces.dto';
+import { CommonService } from '../common/common.service';
+import { SpacesPagianteDto } from './dto/spaces-paginate.dto';
 
 @Injectable()
 export class SpacesService {
     constructor(
         @InjectRepository(SpacesEntity)
         private readonly spaceRepo: Repository<SpacesEntity>,
+        private readonly commonService: CommonService,
     ) { }
+
+    async spacePaginate(dto: SpacesPagianteDto) {
+        return this.commonService.pagiante(
+            dto,
+            this.spaceRepo,
+            {
+
+            },
+            "spaces"
+        )
+    }
 
     async createSpace(userId: number, dto: CreateSpaceDto) {
         const space = this.spaceRepo.create({
@@ -25,7 +39,7 @@ export class SpacesService {
         return newSpace;
     }
 
-    async findSpaces(){
+    async findSpaces() {
         return this.spaceRepo.find();
     }
 

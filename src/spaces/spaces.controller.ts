@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Request } from '@nestjs/common';
 import { SpacesService } from './spaces.service';
 import { CreateSpaceDto } from './dto/create_space.dto';
 import { RoleEnum } from '../users/const/roles.enum.const';
 import { Role } from '../users/decorator/role.drcorator';
 import { IsPublic } from '../common/decorator/is_public.decoreator';
 import { UpdateSpacesDto } from './dto/update.spaces.dto';
+import { SpacesPagianteDto } from './dto/spaces-paginate.dto';
 
 @Controller('spaces')
 export class SpacesController {
@@ -12,8 +13,8 @@ export class SpacesController {
 
   @Get()
   @IsPublic()
-  getSpace(){
-    return this.spacesService.findSpaces();
+  getSpace(@Query() query: SpacesPagianteDto) {
+    return this.spacesService.spacePaginate(query);
   }
 
   @Get(":id")
