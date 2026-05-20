@@ -39,9 +39,6 @@ export class SpacesService {
         return newSpace;
     }
 
-    async findSpaces() {
-        return this.spaceRepo.find();
-    }
 
     async findOneSpaces(id: number) {
         const space = await this.spaceRepo.findOne({

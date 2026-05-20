@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { CoreEntity } from "../../common/entities/core.entity";
 import { UsersEntity } from "../../users/entities/users.entity";
 import { ReservationsEntity } from "../../reservations/entities/reservations.entity";
+import { ReviewsEntity } from "../../reviews/entities/reviews.entity";
 
 @Entity("space")
 export class SpacesEntity extends CoreEntity {
@@ -47,6 +48,9 @@ export class SpacesEntity extends CoreEntity {
         nullable: false,
     })
     owner!: UsersEntity;
+
+    @OneToMany(() => ReviewsEntity, (reviews) => reviews.space)
+    reviews!: ReviewsEntity[];
 
     @OneToMany(() => ReservationsEntity, (reservations) => reservations.space)
     reservations!: ReservationsEntity[];

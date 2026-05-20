@@ -4,6 +4,7 @@ import { RoleEnum } from "../const/roles.enum.const";
 import { SpacesEntity } from "../../spaces/entities/spaces.entity";
 import { ReservationsEntity } from "../../reservations/entities/reservations.entity";
 import { MessagesEntity } from "../../messages/entities/messages.entity";
+import { ReviewsEntity } from "../../reviews/entities/reviews.entity";
 
 @Entity("user")
 export class UsersEntity extends CoreEntity {
@@ -39,4 +40,7 @@ export class UsersEntity extends CoreEntity {
 
     @OneToMany(() => MessagesEntity, (messages) => messages.sender)
     messages!: MessagesEntity[];
+
+    @OneToMany(() => ReviewsEntity, (reviews) => reviews.user)
+    reviews!: ReviewsEntity[];
 }
