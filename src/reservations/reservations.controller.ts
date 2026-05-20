@@ -2,18 +2,10 @@ import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Request, UseGu
 import { ReservationsService } from './reservations.service';
 import { CreateReservationDto } from './dto/create_reservation.dto';
 import { UpdateReservationStatusDto } from './dto/update_reservation.status.dto';
-import { RoleGuard } from '../users/guard/role.guard';
-import { IsPublic } from '../common/decorator/is_public.decoreator';
 
 @Controller('reservations')
 export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) { }
-
-  @Get()
-  @IsPublic()
-  getReservartion() {
-    return this.reservationsService.findReservation();
-  }
 
   @Post(":spaceId")
   postReservations(
@@ -32,3 +24,4 @@ export class ReservationsController {
     return this.reservationsService.updateStatusReservation(id, dto)
   }
 }
+// 
