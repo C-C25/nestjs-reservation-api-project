@@ -6,11 +6,8 @@ import { ReviewsEntity } from './entities/reviews.entity';
 import { CommonModule } from '../common/common.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([ReviewsEntity]),
-    CommonModule,
-  ],
+  imports: [TypeOrmModule.forFeature([ReviewsEntity]), CommonModule],
   controllers: [ReviewsController],
   providers: [ReviewsService],
 })
-export class ReviewsModule { }
+export class ReviewsModule {}

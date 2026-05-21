@@ -1,3 +1,3 @@
-import { CorePaginationDto } from "../../common/dto/core-pagination.dto";
+import { CorePaginationDto } from '../../common/dto/core-pagination.dto';
 
-export class SpacesPagianteDto extends CorePaginationDto { }
+export class SpacesPagianteDto extends CorePaginationDto {}

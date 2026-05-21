@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Request,
+} from '@nestjs/common';
 import { SpacesService } from './spaces.service';
 import { CreateSpaceDto } from './dto/create_space.dto';
 import { RoleEnum } from '../users/const/roles.enum.const';
@@ -9,7 +20,7 @@ import { SpacesPagianteDto } from './dto/spaces-paginate.dto';
 
 @Controller('spaces')
 export class SpacesController {
-  constructor(private readonly spacesService: SpacesService) { }
+  constructor(private readonly spacesService: SpacesService) {}
 
   @Get()
   @IsPublic()
@@ -17,37 +28,30 @@ export class SpacesController {
     return this.spacesService.spacePaginate(query);
   }
 
-  @Get(":id")
+  @Get(':id')
   @IsPublic()
-  getSpace(
-    @Param("id", ParseIntPipe) id: number,
-  ) {
+  getSpace(@Param('id', ParseIntPipe) id: number) {
     return this.spacesService.findOneSpaces(id);
   }
 
   @Post()
   @Role(RoleEnum.ADMIN)
-  createSpace(
-    @Body() dto: CreateSpaceDto,
-    @Request() req,
-  ) {
+  createSpace(@Body() dto: CreateSpaceDto, @Request() req) {
     return this.spacesService.createSpace(req.user.id, dto);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   @Role(RoleEnum.ADMIN)
   patchSpace(
-    @Param("id", ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateSpacesDto,
   ) {
     return this.spacesService.updateSpaces(id, dto);
   }
 
-  @Delete(":id")
+  @Delete(':id')
   @Role(RoleEnum.ADMIN)
-  deleteSpace(
-    @Param("id", ParseIntPipe) id: number,
-  ) {
+  deleteSpace(@Param('id', ParseIntPipe) id: number) {
     return this.spacesService.removeSpaces(id);
   }
 }

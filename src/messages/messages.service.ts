@@ -6,29 +6,29 @@ import { CreateMessageDto } from './dto/create-message.dto';
 
 @Injectable()
 export class MessagesService {
-    constructor(
-        @InjectRepository(MessagesEntity)
-        private readonly messageRepo: Repository<MessagesEntity>,
-    ) { }
+  constructor(
+    @InjectRepository(MessagesEntity)
+    private readonly messageRepo: Repository<MessagesEntity>,
+  ) {}
 
-    async createMessage(dto: CreateMessageDto, authorId: number) {
-        const message = await this.messageRepo.save({
-            chat: {
-                id: dto.chatId,
-            },
-            sender: {
-                id: authorId,
-            },
-            content: dto.content,
-        });
+  async createMessage(dto: CreateMessageDto, authorId: number) {
+    const message = await this.messageRepo.save({
+      chat: {
+        id: dto.chatId,
+      },
+      sender: {
+        id: authorId,
+      },
+      content: dto.content,
+    });
 
-        return await this.messageRepo.findOne({
-            where: {
-                id: message.id,
-            },
-            relations: {
-                chat: true,
-            }
-        });
-    }
+    return await this.messageRepo.findOne({
+      where: {
+        id: message.id,
+      },
+      relations: {
+        chat: true,
+      },
+    });
+  }
 }

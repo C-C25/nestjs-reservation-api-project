@@ -1,5 +1,5 @@
-import { ValidationArguments } from "class-validator";
+import { ValidationArguments } from 'class-validator';
 
 export const stringValidationMessage = (args: ValidationArguments) => {
-    return `${args.property}에 문자열 입력만 가능합니다.`
-}
+  return `${args.property}에 문자열 입력만 가능합니다.`;
+};

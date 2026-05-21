@@ -1,26 +1,26 @@
-import { IsArray, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateSpaceDto {
-    @IsString()
-    title!: string;
+  @IsString()
+  title!: string;
 
-    @IsString()
-    content!: string;
+  @IsString()
+  content!: string;
 
-    @IsString()
-    address!: string;
-    
-    @IsString()
-    contact!: string;
+  @IsString()
+  address!: string;
 
-    @IsNumber()
-    pricePerHour!: number;
+  @IsString()
+  contact!: string;
 
-    @IsNumber()
-    maxCapacity!: number;
+  @IsNumber()
+  pricePerHour!: number;
 
-    @IsOptional()
-    @IsArray()
-    @IsString({ each: true })
-    images?: string[]
+  @IsNumber()
+  maxCapacity!: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  images?: string[];
 }

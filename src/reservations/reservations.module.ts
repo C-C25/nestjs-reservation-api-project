@@ -19,4 +19,4 @@ import { CommonModule } from '../common/common.module';
   controllers: [ReservationsController],
   providers: [ReservationsService],
 })
-export class ReservationsModule { }
+export class ReservationsModule {}

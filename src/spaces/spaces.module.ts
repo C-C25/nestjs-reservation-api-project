@@ -6,12 +6,9 @@ import { SpacesEntity } from './entities/spaces.entity';
 import { CommonModule } from '../common/common.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([SpacesEntity]),
-    CommonModule,
-  ],
+  imports: [TypeOrmModule.forFeature([SpacesEntity]), CommonModule],
   exports: [SpacesService],
   controllers: [SpacesController],
   providers: [SpacesService],
 })
-export class SpacesModule { }
+export class SpacesModule {}

@@ -1,4 +1,12 @@
-import { Body, Controller, HttpCode, Post, Request, UseGuards, Headers } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  Request,
+  UseGuards,
+  Headers,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { BasicTokenGuard } from './guard/basic_token.guard';
 import { RegisterAuthDto } from './dto/auth_register.dto';
@@ -7,7 +15,7 @@ import { RefreshTokenGuard } from './guard/bearer_token.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('token/access')
   @IsPublic()
@@ -18,8 +26,8 @@ export class AuthController {
     const newToken = this.authService.rotateAccessToken(token);
 
     return {
-      accessToken: newToken
-    }
+      accessToken: newToken,
+    };
   }
 
   @Post('token/refresh')
@@ -31,23 +39,21 @@ export class AuthController {
     const newToken = this.authService.rotateRefreshToken(token);
 
     return {
-      refreshToken: newToken
-    }
+      refreshToken: newToken,
+    };
   }
 
   @IsPublic()
-  @Post("register/email")
-  registerPost(
-    @Body() dto: RegisterAuthDto
-  ) {
-    return this.authService.registerWithEmail(dto)
+  @Post('register/email')
+  registerPost(@Body() dto: RegisterAuthDto) {
+    return this.authService.registerWithEmail(dto);
   }
 
   @IsPublic()
-  @Post("login/email")
+  @Post('login/email')
   @UseGuards(BasicTokenGuard)
   @HttpCode(200)
-  loginPost(@Request() req,) {
+  loginPost(@Request() req) {
     return this.authService.loginUser(req.user);
   }
-} 
+}

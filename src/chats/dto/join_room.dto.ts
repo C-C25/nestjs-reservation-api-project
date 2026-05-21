@@ -1,6 +1,6 @@
-import { IsNumber } from "class-validator";
+import { IsNumber } from 'class-validator';
 
 export class JoinRoomDto {
-    @IsNumber({}, { each: true })
-    chatId!: number;
+  @IsNumber({}, { each: true })
+  chatId!: number;
 }

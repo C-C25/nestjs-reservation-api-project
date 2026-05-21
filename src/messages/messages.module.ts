@@ -5,11 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MessagesEntity } from './entities/messages.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([MessagesEntity])
-  ],
+  imports: [TypeOrmModule.forFeature([MessagesEntity])],
   exports: [MessagesService],
   controllers: [MessagesController],
   providers: [MessagesService],
 })
-export class MessagesModule { }
+export class MessagesModule {}

@@ -5,13 +5,10 @@ import { IsPublic } from '../common/decorator/is_public.decoreator';
 
 @Controller('chats')
 export class ChatsController {
-  constructor(private readonly chatsService: ChatsService) { }
+  constructor(private readonly chatsService: ChatsService) {}
 
   @Get()
-  getPaginate(
-    @Query() query: ChatPageinateDto,
-    @Req() req,
-  ) {
+  getPaginate(@Query() query: ChatPageinateDto, @Req() req) {
     return this.chatsService.chatPageinate(query, req.user);
   }
 }
