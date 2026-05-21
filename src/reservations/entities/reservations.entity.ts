@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToOne } from "typeorm";
+import { Column, Entity, ManyToOne, OneToOne, VersionColumn } from "typeorm";
 import { CoreEntity } from "../../common/entities/core.entity";
 import { ReservationStatusEnum } from "../const/status.enum.const";
 import { UsersEntity } from "../../users/entities/users.entity";
@@ -28,6 +28,7 @@ export class ReservationsEntity extends CoreEntity {
         default: ReservationStatusEnum.PENDING,
     })
     status!: ReservationStatusEnum;
+
 
     @ManyToOne(() => UsersEntity, (user) => user.reservations, {
         nullable: false

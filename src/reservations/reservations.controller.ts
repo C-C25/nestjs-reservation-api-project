@@ -1,19 +1,24 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Request, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ReservationsService } from './reservations.service';
 import { CreateReservationDto } from './dto/create_reservation.dto';
 import { UpdateReservationStatusDto } from './dto/update_reservation.status.dto';
+import { TarnsactionIntercetor } from '../common/interceptor/transaction.intercerptor';
+import type { QueryRunner as QR } from 'typeorm';
+import { QueryRunner } from '../common/decorator/query-runner.decorator';
 
 @Controller('reservations')
 export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) { }
 
   @Post(":spaceId")
-  postReservations(
+  @UseInterceptors(TarnsactionIntercetor)
+  async postReservations(
     @Param("spaceId", ParseIntPipe) spaceId: number,
     @Body() dto: CreateReservationDto,
     @Request() req,
+    @QueryRunner() qr: QR
   ) {
-    return this.reservationsService.createReservation(req.user.id, spaceId, dto);
+    return await this.reservationsService.createReservation(req.user.id, spaceId, dto, qr);
   }
 
   @Patch(":reservationId")
@@ -24,4 +29,3 @@ export class ReservationsController {
     return this.reservationsService.updateStatusReservation(id, dto)
   }
 }
-// 
