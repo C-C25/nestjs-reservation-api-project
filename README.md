@@ -22,7 +22,7 @@
 - **컨테이너**: Docker
 
 ## ERD
-![ERD] (./docs/red.png)
+![ERD](./docs/red.png)
 
 ## 아키텍처
 
