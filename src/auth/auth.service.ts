@@ -75,7 +75,7 @@ export class AuthService {
             secret: this.configService.get<string>(ENV_JWT_REFRESH_SECRET_KEY),
         });
 
-        if (decoded.type !== 'access') {
+        if (decoded.tokenType !== 'refresh') {
             throw new UnauthorizedException('accessToken은 refreshToken으로 발급 가능')
         };
 
@@ -89,7 +89,7 @@ export class AuthService {
             secret: this.configService.get<string>(ENV_JWT_REFRESH_SECRET_KEY),
         });
 
-        if (decoded.type === 'refresh') {
+        if (decoded.tokenType !== 'refresh') {
             throw new UnauthorizedException("refreshToken은 refreshToken으로만 발급 가능합니다.");
         };
 
