@@ -63,10 +63,6 @@ export class ReservationsService {
             lock: { mode: "pessimistic_write" }
         })
 
-        console.log('dto.startTime:', dto.startTime);
-        console.log('dto.endTime:', dto.endTime);
-        console.log('spaceId:', spaceId);
-
         if (overlapping) {
             throw new BadRequestException("이미 예약된 시간대 입니다.");
         }

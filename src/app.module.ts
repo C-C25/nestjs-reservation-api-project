@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,6 +16,7 @@ import { AccessTokenGuard } from './auth/guard/bearer_token.guard';
 import { RoleGuard } from './users/guard/role.guard';
 import { ReviewsModule } from './reviews/reviews.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { LogMiddleware } from './common/middleware/log.middleware';
 
 @Module({
   imports: [
@@ -34,7 +35,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       synchronize: true, // 나중에 false 로
     }),
     ScheduleModule.forRoot(),
-    
+
     CommonModule,
     UsersModule,
     SpacesModule,
@@ -53,7 +54,16 @@ import { ScheduleModule } from '@nestjs/schedule';
     {
       provide: APP_GUARD,
       useClass: RoleGuard,
-    }
+    },
   ],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(
+      LogMiddleware
+    ).forRoutes({
+      path: `{*splat}`,
+      method: RequestMethod.ALL
+    });
+  };
+}
