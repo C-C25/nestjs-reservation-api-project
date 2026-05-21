@@ -13,13 +13,13 @@ export class SpacesController {
 
   @Get()
   @IsPublic()
-  getSpace(@Query() query: SpacesPagianteDto) {
+  getSpaces(@Query() query: SpacesPagianteDto) {
     return this.spacesService.spacePaginate(query);
   }
 
   @Get(":id")
   @IsPublic()
-  getSpaces(
+  getSpace(
     @Param("id", ParseIntPipe) id: number,
   ) {
     return this.spacesService.findOneSpaces(id);

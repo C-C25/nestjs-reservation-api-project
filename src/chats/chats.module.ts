@@ -7,6 +7,7 @@ import { MessagesModule } from '../messages/messages.module';
 import { ChatsGateway } from './chats.gateway';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
+import { CommonModule } from '../common/common.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UsersModule } from '../users/users.module';
     MessagesModule,
     AuthModule,
     UsersModule,
+    CommonModule,
   ],
   exports: [ChatsService],
   controllers: [ChatsController],
