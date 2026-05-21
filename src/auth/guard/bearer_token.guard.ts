@@ -16,19 +16,28 @@ export class BearerTokenGuard implements CanActivate {
 
         const rawToken = req.headers.authorization;
 
-        const token = this.authService.extractTokenFromHeader(rawToken, true);
+        if(!rawToken){
+            throw new UnauthorizedException("토큰이 없습니다.");
+        }
 
-        const verifyToken = this.authService.accessVerifyToken(token);
-
-        const user = await this.usersService.findByEmail(verifyToken.email);
-
-        req.user = user;
-        req.token = token;
-        req.tokenPayload = verifyToken;
-
-        return true;
-    }
-}
+        try {
+            const token = this.authService.extractTokenFromHeader(rawToken, true);
+    
+            const verifyToken = this.authService.accessVerifyToken(token);
+    
+            const user = await this.usersService.findByEmail(verifyToken.email);
+    
+            req.user = user;
+            req.token = token;
+            req.tokenPayload = verifyToken;
+    
+            return true;
+            
+        } catch (e) {
+            throw new UnauthorizedException("토큰이 유효 하지 않습니다.");
+        };
+    };
+};
 
 @Injectable()
 export class AccessTokenGuard extends BearerTokenGuard {

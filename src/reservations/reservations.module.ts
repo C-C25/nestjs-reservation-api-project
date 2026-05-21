@@ -6,6 +6,7 @@ import { ReservationsEntity } from './entities/reservations.entity';
 import { UsersModule } from '../users/users.module';
 import { SpacesModule } from '../spaces/spaces.module';
 import { ChatsModule } from '../chats/chats.module';
+import { CommonModule } from '../common/common.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ChatsModule } from '../chats/chats.module';
     UsersModule,
     SpacesModule,
     ChatsModule,
+    CommonModule,
   ],
   controllers: [ReservationsController],
   providers: [ReservationsService],

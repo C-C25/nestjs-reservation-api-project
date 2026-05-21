@@ -20,7 +20,9 @@ export class SpacesService {
             dto,
             this.spaceRepo,
             {
-
+                relations: {
+                    owner: true,
+                }
             },
             "spaces"
         )

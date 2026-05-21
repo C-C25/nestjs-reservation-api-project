@@ -20,7 +20,10 @@ export class ReviewsService {
             dto,
             this.reviewRepo,
             {
-
+                relations: {
+                    user: true,
+                    space: true,
+                }
             },
             "reviews"
         )

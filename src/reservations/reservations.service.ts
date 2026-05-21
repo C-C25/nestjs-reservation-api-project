@@ -8,6 +8,11 @@ import { UpdateReservationStatusDto } from './dto/update_reservation.status.dto'
 import { ReservationStatusEnum } from './const/status.enum.const';
 import { ChatsService } from '../chats/chats.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { CommonService } from '../common/common.service';
+import { ReservationPaginateDto } from './dto/paginate_reservation.dto';
+import { UsersEntity } from '../users/entities/users.entity';
+import { RoleEnum } from '../users/const/roles.enum.const';
+
 
 @Injectable()
 export class ReservationsService {
@@ -16,33 +21,47 @@ export class ReservationsService {
         private readonly reservationRepo: Repository<ReservationsEntity>,
         private readonly spacesService: SpacesService,
         private readonly chatsService: ChatsService,
+        private readonly commonService: CommonService,
     ) { }
 
-    // @Cron(CronExpression.EVERY_MINUTE)
-    // async hendleReservationReminder(qr?: QueryRunner) {
-    //     const repository = this.getRepository(qr)
+    @Cron(CronExpression.EVERY_MINUTE)
+    async hendleReservationReminder() {
+        const now = new Date();
 
-    //     // 현재 시간을 뽑아 온다.
-    //     const now = new Date();
+        const thirtyMinutesLater = new Date(now.getTime() + 30 * 60 * 1000);
 
-    //     // 30분 내에 존재 하는 데이터를 조회 한다 현재 시간에 ms 으로 계산 한다.
-    //     const thirtyMinutesLater = new Date(now.getTime() + 30 * 60 * 1000);
+        const twentyNineMinutesLater = new Date(now.getTime() + 29 * 60 * 1000);
 
-    //     // 29분 내에 존재 하는 데이터를 조회 한다 현재 시간에 ms 으로 계산 한다.
-    //     const twentyNineMinutesLater = new Date(now.getTime() + 29 * 60 * 1000);
+        const reservations = await this.reservationRepo.find({
+            where: {
+                startTime: Between(twentyNineMinutesLater, thirtyMinutesLater),
+                status: ReservationStatusEnum.CONFIRMED,
+            }
+        });
 
-    //     // 찾는 조건이 CONFIRMED 이면서 시작하는 예약 을 조건으로 찾는다.
-    //     const reservations = await repository.find({
-    //         where: {
-    //             startTime: Between(twentyNineMinutesLater, thirtyMinutesLater),
-    //             status: ReservationStatusEnum.CONFIRMED,
-    //         }
-    //     });
+        for (const reservation of reservations) {
+            console.log(`[e.g. 무슨회사] 에약 ID: ${reservation.id} - 예약 하신 [e.g. 헬스장1번] 입장 까지 30분 남았습니다. 예약 취소는 불가능 합니다.`)
+        }
+    }
 
-    //     for (const reservation of reservations) {
-    //         console.log(`[e.g. 무슨회사] 에약 ID: ${reservation.id} - 예약 하신 [e.g. 헬스장1번] 입장 까지 30분 남았습니다. 예약 취소는 불가능 합니다.`)
-    //     }
-    // }
+
+    reservationPaginate(dto: ReservationPaginateDto, user: UsersEntity) {
+        const ovrrideOptions = user.role === RoleEnum.ADMIN ?
+            { relations: { user: true, space: true, } }
+            : {
+                where: {
+                    user: { id: user.id }
+                },
+                relation: { user: true, space: true }
+            }
+
+        return this.commonService.pagiante(
+            dto,
+            this.reservationRepo,
+            ovrrideOptions,
+            "reservation"
+        )
+    }
 
     getRepository(qr?: QueryRunner) {
         return qr ? qr.manager.getRepository<ReservationsEntity>(ReservationsEntity) : this.reservationRepo;
