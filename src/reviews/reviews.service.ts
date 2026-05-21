@@ -49,19 +49,20 @@ export class ReviewsService {
         return newReview;
     }
 
-    async updateReviews(reviewId: number, dto: UpdateReviewsDto) {
-        const { content } = dto
-
+    async updateReviews(userId: number, reviewId: number, dto: UpdateReviewsDto) {
         const review = await this.reviewRepo.findOne({
-            where: { id: reviewId },
+            where: {
+                user: { id: userId },
+                id: reviewId,
+            },
         });
 
         if (!review) {
             throw new NotFoundException("삭제되었거 나 찾을수 없는 리뷰입니다.");
         }
 
-        for(const key of Object.keys(dto)){
-            if(dto[key] !== undefined){
+        for (const key of Object.keys(dto)) {
+            if (dto[key] !== undefined) {
                 review[key] = dto[key]
             }
         }
@@ -72,17 +73,20 @@ export class ReviewsService {
     };
 
 
-    async removeReview(id: number) {
+    async removeReview(userId: number, reviewId: number) {
         const review = await this.reviewRepo.findOne({
-            where: { id },
+            where: {
+                user: { id: userId },
+                id: reviewId,
+            },
         });
 
-        if(!review){
+        if (!review) {
             throw new NotFoundException("삭제되었거 나 찾을수 없는 리뷰입니다.");
         }
 
-        await this.reviewRepo.softDelete(id);
+        await this.reviewRepo.softDelete(reviewId);
 
-        return id;
+        return reviewId;
     }
 }

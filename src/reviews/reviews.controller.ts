@@ -26,16 +26,18 @@ export class ReviewsController {
 
   @Patch(":reviewsId")
   patchReview(
-    @Param("reviewsId", ParseIntPipe) id: number,
+    @Param("reviewsId", ParseIntPipe) reviewsId: number,
     @Body() dto: UpdateReviewsDto,
+    @Req() req,
   ) {
-    return this.reviewsService.updateReviews(id, dto);
+    return this.reviewsService.updateReviews(req.user.id, reviewsId, dto);
   }
 
   @Delete(":reviewsId")
   deteleReviews(
-    @Param("reviewsId") id: number,
+    @Param("reviewsId", ParseIntPipe) reviewsId: number,
+    @Req() req,
   ) {
-    return this.reviewsService.removeReview(id);
+    return this.reviewsService.removeReview(req.user.id, reviewsId);
   }
 }
