@@ -21,18 +21,8 @@
 - **스케줄러**: @nestjs/schedule
 - **컨테이너**: Docker
 
-## ERD (Entity 설계)
-- User -- OneToMany -- Reservation
-- User -- OneToMany -- Review
-- User -- OneToMany -- Space
-- User -- OneToMany -- Message
-
-- Space -- OneToMany -- Reservation
-- Space -- OneToMany -- Review
-
-- Reservation -- OneToOne -- Chat
-
-- Chat --One ToMany -- Message
+## ERD
+![ERD] (./docs/red.png)
 
 ## 아키텍처
 
