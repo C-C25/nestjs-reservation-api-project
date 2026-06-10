@@ -2,7 +2,6 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
-  InternalServerErrorException,
   NestInterceptor,
 } from '@nestjs/common';
 import { catchError, Observable, tap } from 'rxjs';

@@ -43,10 +43,9 @@ import { LogMiddleware } from './common/middleware/log.middleware';
       password: process.env[ENV_DB_PASSWORD_KEY],
       database: process.env[ENV_DB_NAME_KEY],
       autoLoadEntities: true,
-      synchronize: true, // 나중에 false 로
+      synchronize: true,
     }),
     ScheduleModule.forRoot(),
-
     CommonModule,
     UsersModule,
     SpacesModule,

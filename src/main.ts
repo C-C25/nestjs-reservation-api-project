@@ -11,9 +11,8 @@ async function bootstrap() {
       transformOptions: {
         enableImplicitConversion: true,
       },
-      // 페이지 네이션 때 적용 에정F
-      // whitelist: true
-      // forbidNonWhitelisted: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
     }),
   );
 
