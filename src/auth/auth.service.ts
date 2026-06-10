@@ -117,7 +117,7 @@ export class AuthService {
 
     return this.jwtService.sign(accessPayload, {
       secret: this.configService.get<string>(ENV_JWT_ACCESS_SECRET_KEY),
-      expiresIn: '24h',
+      expiresIn: '5m',
     });
   }
 
@@ -130,7 +130,7 @@ export class AuthService {
 
     return this.jwtService.sign(refreshPayload, {
       secret: this.configService.get<string>(ENV_JWT_REFRESH_SECRET_KEY),
-      expiresIn: '10d',
+      expiresIn: '2h',
     });
   }
 
