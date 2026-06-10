@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsString } from 'class-validator';
+import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 import { stringValidationMessage } from '../../common/validation_message/stirng_validation.message.const';
+import { VersionColumn } from 'typeorm';
 
 export class CreateReservationDto {
   @IsDate()
@@ -15,4 +16,8 @@ export class CreateReservationDto {
     message: stringValidationMessage,
   })
   content!: string;
+
+  @IsNumber()
+  @IsOptional()
+  version?: number;
 }

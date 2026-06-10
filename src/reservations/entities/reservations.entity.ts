@@ -41,4 +41,7 @@ export class ReservationsEntity extends CoreEntity {
 
   @OneToOne(() => ChatsEntity, (chat) => chat.reservation)
   chat!: ChatsEntity;
+
+  @VersionColumn()
+  version!: number;
 }

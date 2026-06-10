@@ -1,9 +1,17 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Between, LessThan, MoreThan, QueryRunner, Repository } from 'typeorm';
+import {
+  Between,
+  LessThan,
+  MoreThan,
+  OptimisticLockVersionMismatchError,
+  QueryRunner,
+  Repository,
+} from 'typeorm';
 import { ReservationsEntity } from './entities/reservations.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateReservationDto } from './dto/create_reservation.dto';
@@ -74,6 +82,40 @@ export class ReservationsService {
       : this.reservationRepo;
   }
 
+  // async createReservation(
+  //   userId: number,
+  //   spaceId: number,
+  //   dto: CreateReservationDto,
+  //   qr?: QueryRunner,
+  // ) {
+  //   const repository = this.getRepository(qr);
+
+  //   await this.spacesService.findOneSpaces(spaceId);
+
+  //   const overlapping = await repository.findOne({
+  //     where: {
+  //       space: { id: spaceId },
+  //       startTime: LessThan(dto.endTime),
+  //       endTime: MoreThan(dto.startTime),
+  //     },
+  //     lock: { mode: 'pessimistic_write' },
+  //   });
+
+  //   if (overlapping) {
+  //     throw new BadRequestException('이미 예약된 시간대 입니다.');
+  //   }
+
+  //   const reservations = repository.create({
+  //     ...dto,
+  //     user: { id: userId },
+  //     space: { id: spaceId },
+  //   });
+
+  //   const newReservation = await repository.save(reservations);
+
+  //   return newReservation;
+  // }
+
   async createReservation(
     userId: number,
     spaceId: number,
@@ -90,22 +132,28 @@ export class ReservationsService {
         startTime: LessThan(dto.endTime),
         endTime: MoreThan(dto.startTime),
       },
-      lock: { mode: 'pessimistic_write' },
     });
 
     if (overlapping) {
-      throw new BadRequestException('이미 예약된 시간대 입니다.');
+      throw new BadRequestException('이미 예약된 시간대입니다.');
     }
 
-    const reservations = repository.create({
+    const reservation = repository.create({
       ...dto,
       user: { id: userId },
       space: { id: spaceId },
     });
 
-    const newReservation = await repository.save(reservations);
-
-    return newReservation;
+    try {
+      return await repository.save(reservation);
+    } catch (e) {
+      if (e instanceof OptimisticLockVersionMismatchError) {
+        throw new ConflictException(
+          '다른 사용자가 동시에 예약했습니다. 다시 시도해주세요',
+        );
+      }
+      throw e;
+    }
   }
 
   async updateStatusReservation(
