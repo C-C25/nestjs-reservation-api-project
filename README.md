@@ -121,7 +121,7 @@
 - 원인: 서버가 @IsPublic()이 refresh 을 인지 하지 못해서 터짐
 - 해결: @IsPublic() 을 사용 할수 있도록 버그 수정
 
-### REdis 연동 문제
+### Redis 연동 문제
 
 - 문제: cache-manager V7과 cache-manager-redis-store V3을 함께 설치 했으나 로그인을 시도할 때 Refresh Token이 Redis에 저장되지 않는 문제가 발생
 - 버그 후 대처: 로그를 찍었을 때 에러 없이 정상적으로 출력되긴 했습니다. Redis 컨테이너를 강제로 종료해도 서버에서 에러가 발생하지 않음을 확인했습니다. 이를 통해 NestJS가 Redis에 실제로 연결되지 않고 메모리에 저장하고 있다는 것을 확인했습니다. 디버거 확인 cacheManager 내부에 \_store를 확인한 결과 Redis가 아닌 store로 사용하고 있었습니다.
