@@ -7,13 +7,15 @@ import {
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
   ENV_DB_HOST_KEY,
   ENV_DB_NAME_KEY,
   ENV_DB_PASSWORD_KEY,
   ENV_DB_PORT_KEY,
   ENV_DB_USERNAME_KEY,
+  ENV_REDIS_HOST_KEY,
+  ENV_REDIS_PORT_KEY,
 } from './common/const/env-keys-values.const';
 import { CommonModule } from './common/common.module';
 import { UsersModule } from './users/users.module';
@@ -28,6 +30,7 @@ import { RoleGuard } from './reservations/const/role.guard';
 import { ReviewsModule } from './reviews/reviews.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LogMiddleware } from './common/middleware/log.middleware';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -54,6 +57,7 @@ import { LogMiddleware } from './common/middleware/log.middleware';
     MessagesModule,
     AuthModule,
     ReviewsModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [
