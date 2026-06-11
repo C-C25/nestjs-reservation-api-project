@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -14,6 +15,9 @@ import {
 import { UsersEntity } from '../users/entities/users.entity';
 import { UsersService } from '../users/users.service';
 import { RegisterAuthDto } from './dto/auth_register.dto';
+import type { Cache } from 'cache-manager';
+import { REDIS_CLIENT } from '../redis/redis.module';
+import Redis from 'ioredis';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +25,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly usersSevice: UsersService,
+    @Inject(REDIS_CLIENT) private readonly redisClient: Redis,
   ) {}
 
   extractTokenFromHeader(header: string, isBearer: boolean) {
@@ -76,7 +81,7 @@ export class AuthService {
     }
   }
 
-  rotateAccessToken(token: string) {
+  async rotateAccessToken(token: string) {
     const decoded = this.jwtService.verify(token, {
       secret: this.configService.get<string>(ENV_JWT_REFRESH_SECRET_KEY),
     });
@@ -87,12 +92,20 @@ export class AuthService {
       );
     }
 
+    const storedToken = await this.redisClient.get(
+      `refresh_token_${decoded.sub}`,
+    );
+
+    if (!storedToken || storedToken !== token) {
+      throw new UnauthorizedException(`유호하지 않은 RefreshToken입니다.`);
+    }
+
     return this.accessSignToken({
       ...decoded,
     });
   }
 
-  rotateRefreshToken(token: string) {
+  async rotateRefreshToken(token: string) {
     const decoded = this.jwtService.verify(token, {
       secret: this.configService.get<string>(ENV_JWT_REFRESH_SECRET_KEY),
     });
@@ -103,9 +116,26 @@ export class AuthService {
       );
     }
 
-    return this.refreshSignToken({
+    const storedToken = await this.redisClient.get(
+      `refresh_token_${decoded.sub}`,
+    );
+
+    if (!storedToken || storedToken !== token) {
+      throw new UnauthorizedException('유효하지 않은 RefreshToken입니다.');
+    }
+
+    const newRefreshTokenn = this.refreshSignToken({
       ...decoded,
     });
+
+    await this.redisClient.set(
+      `refresh_token_${decoded.sub}`,
+      newRefreshTokenn,
+      `EX`,
+      60 * 60 * 2,
+    );
+
+    return newRefreshTokenn;
   }
 
   private accessSignToken(user: Pick<UsersEntity, 'email' | 'id'>) {
@@ -134,10 +164,19 @@ export class AuthService {
     });
   }
 
-  loginUser(user: Pick<UsersEntity, 'email' | 'id'>) {
+  async loginUser(user: Pick<UsersEntity, 'email' | 'id'>) {
+    const refreshToken = this.refreshSignToken(user);
+
+    await this.redisClient.set(
+      `refresh_token_${user.id}`,
+      refreshToken,
+      'EX',
+      60 * 60 * 2,
+    );
+
     return {
       accessToken: this.accessSignToken(user),
-      refreshToken: this.refreshSignToken(user),
+      refreshToken,
     };
   }
 
@@ -160,7 +199,7 @@ export class AuthService {
   async loginWithEmail(user: Pick<UsersEntity, 'email' | 'password'>) {
     const existingUser = await this.authenticateWithEmailAndPassword(user);
 
-    return this.loginUser(existingUser);
+    return await this.loginUser(existingUser);
   }
 
   async registerWithEmail(dto: RegisterAuthDto) {
@@ -174,6 +213,14 @@ export class AuthService {
       password: hash,
     });
 
-    return this.loginUser(newUser);
+    return await this.loginUser(newUser);
+  }
+
+  async logout(userId: number) {
+    await this.redisClient.del(`refresh_token_${userId}`);
+
+    return {
+      message: '로그아웃 되었습니다.',
+    };
   }
 }

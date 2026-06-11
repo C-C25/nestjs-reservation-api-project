@@ -20,10 +20,10 @@ export class AuthController {
   @Post('token/access')
   @IsPublic()
   @UseGuards(RefreshTokenGuard)
-  postTokenAccess(@Headers('authorization') rawToken: string) {
+  async postTokenAccess(@Headers('authorization') rawToken: string) {
     const token = this.authService.extractTokenFromHeader(rawToken, true);
 
-    const newToken = this.authService.rotateAccessToken(token);
+    const newToken = await this.authService.rotateAccessToken(token);
 
     return {
       accessToken: newToken,
@@ -33,10 +33,10 @@ export class AuthController {
   @Post('token/refresh')
   @IsPublic()
   @UseGuards(RefreshTokenGuard)
-  postTokenRefresh(@Headers('authorization') rawToken: string) {
+  async postTokenRefresh(@Headers('authorization') rawToken: string) {
     const token = this.authService.extractTokenFromHeader(rawToken, true);
 
-    const newToken = this.authService.rotateRefreshToken(token);
+    const newToken = await this.authService.rotateRefreshToken(token);
 
     return {
       refreshToken: newToken,
@@ -55,5 +55,11 @@ export class AuthController {
   @HttpCode(200)
   loginPost(@Request() req) {
     return this.authService.loginUser(req.user);
+  }
+
+  @Post('logout/email')
+  async logout(@Request() req) {
+    console.log(`logout userId:`, req.user);
+    return this.authService.logout(req.user.id);
   }
 }
