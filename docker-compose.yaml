@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:15
     ports:
-      - "5432:5432"
+      - '5432:5432'
     restart: always
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
@@ -10,3 +10,9 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+
+  redis:
+    image: redis
+    ports:
+      - '6379:6379'
+    restart: always
