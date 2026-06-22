@@ -7,6 +7,7 @@
 ## 배포
 
 - 배포 주소: http://43.200.251.28:3000
+- API 문서 (Swagger): http://43.200.251.28:3000/api
 - AWS EC2(Ubuntu) + Docker(PostgreSQL, Redis) + PM2로 배포
 
 ## 프로젝트 핵심 기능
