@@ -22,6 +22,7 @@ async function bootstrap() {
     .setDescription('NestJS 기반 예약 서비스 API 문서')
     .setVersion('1.0')
     .addBasicAuth()
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

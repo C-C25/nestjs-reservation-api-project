@@ -107,6 +107,16 @@
 | send_message    | 메시지 전송 | client -> server |
 | receive_message | 메세지 수신 | server -> client |
 
+## 모니터링
+
+Prometheus + Grafana를 활용해 운영 환경 모니터링 환경을 구성했습니다.
+
+- **HTTP 요청수**: API별 요청 휫수 추적
+- **API 응답 시간**: 구간별 응답 시간 분포 (p50, p90, p99)
+- **에러율**: 4xx, 5xx 응답 비율 추적,
+
+![Monitoring Dashboard](./docs/monitoring.png)
+
 ## 트러블슈팅
 
 ### 전역 Guard 등록시 의존성 주입 에러

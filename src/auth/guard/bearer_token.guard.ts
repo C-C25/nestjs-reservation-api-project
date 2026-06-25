@@ -59,11 +59,16 @@ export class AccessTokenGuard extends BearerTokenGuard {
       context.getClass(),
     ]);
 
-    if (isPublic) return true;
-
-    await super.canActivate(context);
+    if (isPublic) {
+      return true;
+    }
 
     const req = context.switchToHttp().getRequest();
+    if (req.url === '/metrics') {
+      return true;
+    }
+
+    await super.canActivate(context);
 
     if (req.tokenPayload.tokenType !== 'access') {
       throw new UnauthorizedException('올바른 토큰이 아닙니다.');

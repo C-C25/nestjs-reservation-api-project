@@ -24,13 +24,15 @@ import { ReservationsModule } from './reservations/reservations.module';
 import { ChatsModule } from './chats/chats.module';
 import { MessagesModule } from './messages/messages.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guard/bearer_token.guard';
 import { RoleGuard } from './reservations/const/role.guard';
 import { ReviewsModule } from './reviews/reviews.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { LogMiddleware } from './common/middleware/log.middleware';
 import { RedisModule } from './redis/redis.module';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { MetricInterceptor } from './common/interceptor/metrics.interceptor';
 
 @Module({
   imports: [
@@ -38,6 +40,7 @@ import { RedisModule } from './redis/redis.module';
       envFilePath: '.env',
       isGlobal: true,
     }),
+    PrometheusModule.register(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       port: parseInt(process.env[ENV_DB_PORT_KEY]!),
@@ -69,6 +72,10 @@ import { RedisModule } from './redis/redis.module';
     {
       provide: APP_GUARD,
       useClass: RoleGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: MetricInterceptor,
     },
   ],
 })
