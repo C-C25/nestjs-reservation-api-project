@@ -15,7 +15,6 @@ import {
 import { UsersEntity } from '../users/entities/users.entity';
 import { UsersService } from '../users/users.service';
 import { RegisterAuthDto } from './dto/auth_register.dto';
-import type { Cache } from 'cache-manager';
 import { REDIS_CLIENT } from '../redis/redis.module';
 import Redis from 'ioredis';
 
@@ -24,7 +23,7 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly usersSevice: UsersService,
+    private readonly usersService: UsersService,
     @Inject(REDIS_CLIENT) private readonly redisClient: Redis,
   ) {}
 
@@ -42,7 +41,7 @@ export class AuthService {
     return token;
   }
 
-  docodedBasicToken(base64String: string) {
+  decodedBasicToken(base64String: string) {
     const decoded = Buffer.from(base64String, 'base64').toString('utf8');
 
     const split = decoded.split(':');
@@ -124,18 +123,18 @@ export class AuthService {
       throw new UnauthorizedException('유효하지 않은 RefreshToken입니다.');
     }
 
-    const newRefreshTokenn = this.refreshSignToken({
+    const newRefreshToken = this.refreshSignToken({
       ...decoded,
     });
 
     await this.redisClient.set(
       `refresh_token_${decoded.sub}`,
-      newRefreshTokenn,
+      newRefreshToken,
       `EX`,
       60 * 60 * 2,
     );
 
-    return newRefreshTokenn;
+    return newRefreshToken;
   }
 
   private accessSignToken(user: Pick<UsersEntity, 'email' | 'id'>) {
@@ -183,7 +182,7 @@ export class AuthService {
   async authenticateWithEmailAndPassword(
     user: Pick<UsersEntity, 'email' | 'password'>,
   ) {
-    const existingUser = await this.usersSevice.findByEmail(user.email);
+    const existingUser = await this.usersService.findByEmail(user.email);
 
     if (!existingUser)
       throw new BadRequestException('이메일 또는 비밀번호가 틀렸습니다.');
@@ -208,7 +207,7 @@ export class AuthService {
       parseInt(this.configService.get<string>(ENV_HASH_ROUND_KEY)!),
     );
 
-    const newUser = await this.usersSevice.createUser({
+    const newUser = await this.usersService.createUser({
       ...dto,
       password: hash,
     });

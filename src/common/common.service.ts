@@ -11,7 +11,7 @@ import { FILTER_MAPPER } from './const/filter_mapper.const';
 
 @Injectable()
 export class CommonService {
-  pagiante<T extends CoreEntity>(
+  paginate<T extends CoreEntity>(
     dto: CorePaginationDto,
     repository: Repository<T>,
     overrideFindOptions: FindManyOptions<T> = {},
@@ -20,7 +20,7 @@ export class CommonService {
     if (dto.page !== undefined) {
       return this.pagePaginate<T>(dto, repository, overrideFindOptions);
     } else {
-      return this.cursorPaginte<T>(dto, repository, overrideFindOptions, path);
+      return this.cursorPaginate<T>(dto, repository, overrideFindOptions, path);
     }
   }
 
@@ -58,7 +58,7 @@ export class CommonService {
     };
   }
 
-  private async cursorPaginte<T extends CoreEntity>(
+  private async cursorPaginate<T extends CoreEntity>(
     dto: CorePaginationDto,
     repository: Repository<T>,
     overrideFindOptions: FindManyOptions<T> = {},

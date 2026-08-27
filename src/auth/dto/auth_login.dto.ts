@@ -1,5 +1,5 @@
-import { IsEmail, IsString, Length, MaxLength } from 'class-validator';
-import { stringValidationMessage } from '../../common/validation_message/stirng_validation.message.const';
+import { IsEmail, IsString, MaxLength } from 'class-validator';
+import { stringValidationMessage } from '../../common/validation_message/string_validation.message.const';
 
 export class LoginAuthDto {
   @IsEmail(

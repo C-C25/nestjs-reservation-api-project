@@ -1,5 +1,5 @@
 import { IsInt, IsString, Max, Min } from 'class-validator';
-import { stringValidationMessage } from '../../common/validation_message/stirng_validation.message.const';
+import { stringValidationMessage } from '../../common/validation_message/string_validation.message.const';
 
 export class CreateReviewDto {
   @IsString({

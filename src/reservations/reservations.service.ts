@@ -36,7 +36,7 @@ export class ReservationsService {
   ) {}
 
   @Cron(CronExpression.EVERY_MINUTE)
-  async hendleReservationReminder() {
+  async handleReservationReminder() {
     const now = new Date();
 
     const thirtyMinutesLater = new Date(now.getTime() + 30 * 60 * 1000);
@@ -58,7 +58,7 @@ export class ReservationsService {
   }
 
   reservationPaginate(dto: ReservationPaginateDto, user: UsersEntity) {
-    const ovrrideOptions =
+    const overrideOptions =
       user.role === RoleEnum.ADMIN
         ? { relations: { user: true, space: true } }
         : {
@@ -68,10 +68,10 @@ export class ReservationsService {
             relation: { user: true, space: true },
           };
 
-    return this.commonService.pagiante(
+    return this.commonService.paginate(
       dto,
       this.reservationRepo,
-      ovrrideOptions,
+      overrideOptions,
       'reservation',
     );
   }
@@ -81,40 +81,6 @@ export class ReservationsService {
       ? qr.manager.getRepository<ReservationsEntity>(ReservationsEntity)
       : this.reservationRepo;
   }
-
-  // async createReservation(
-  //   userId: number,
-  //   spaceId: number,
-  //   dto: CreateReservationDto,
-  //   qr?: QueryRunner,
-  // ) {
-  //   const repository = this.getRepository(qr);
-
-  //   await this.spacesService.findOneSpaces(spaceId);
-
-  //   const overlapping = await repository.findOne({
-  //     where: {
-  //       space: { id: spaceId },
-  //       startTime: LessThan(dto.endTime),
-  //       endTime: MoreThan(dto.startTime),
-  //     },
-  //     lock: { mode: 'pessimistic_write' },
-  //   });
-
-  //   if (overlapping) {
-  //     throw new BadRequestException('이미 예약된 시간대 입니다.');
-  //   }
-
-  //   const reservations = repository.create({
-  //     ...dto,
-  //     user: { id: userId },
-  //     space: { id: spaceId },
-  //   });
-
-  //   const newReservation = await repository.save(reservations);
-
-  //   return newReservation;
-  // }
 
   async createReservation(
     userId: number,

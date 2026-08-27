@@ -9,7 +9,6 @@ import {
   WebSocketServer,
   WsException,
 } from '@nestjs/websockets';
-import { ChatsService } from './chats.service';
 import { Server, Socket } from 'socket.io';
 import { UsersEntity } from '../users/entities/users.entity';
 import { UsePipes, ValidationPipe } from '@nestjs/common';

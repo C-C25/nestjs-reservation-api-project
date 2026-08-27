@@ -10,7 +10,7 @@ export const QueryRunner = createParamDecorator(
 
     if (!req.queryRunner) {
       throw new InternalServerErrorException(
-        `Query Runner Decoratior를 사용 하려면 트랜젝션 데코레이터를 적용해야 합니다.`,
+        `Query Runner Decorator를 사용 하려면 트랜젝션 데코레이터를 적용해야 합니다.`,
       );
     }
 

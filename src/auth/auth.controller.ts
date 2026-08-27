@@ -10,7 +10,7 @@ import {
 import { AuthService } from './auth.service';
 import { BasicTokenGuard } from './guard/basic_token.guard';
 import { RegisterAuthDto } from './dto/auth_register.dto';
-import { IsPublic } from '../common/decorator/is_public.decoreator';
+import { IsPublic } from '../common/decorator/is_public.decorator';
 import { RefreshTokenGuard } from './guard/bearer_token.guard';
 
 @Controller('auth')

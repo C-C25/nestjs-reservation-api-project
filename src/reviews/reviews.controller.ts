@@ -14,7 +14,7 @@ import { ReviewsService } from './reviews.service';
 import { ReviewsPaginateDto } from './dto/reviews_pagination.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewsDto } from './dto/update-review.dto';
-import { IsPublic } from '../common/decorator/is_public.decoreator';
+import { IsPublic } from '../common/decorator/is_public.decorator';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -27,12 +27,12 @@ export class ReviewsController {
   }
 
   @Post(':spaceId')
-  postRevires(
+  postReviews(
     @Param('spaceId', ParseIntPipe) id: number,
     @Body() dto: CreateReviewDto,
     @Req() req,
   ) {
-    return this.reviewsService.creaetReviews(req.user.id, id, dto);
+    return this.reviewsService.createReviews(req.user.id, id, dto);
   }
 
   @Patch(':reviewsId')
@@ -45,7 +45,7 @@ export class ReviewsController {
   }
 
   @Delete(':reviewsId')
-  deteleReviews(
+  deleteReviews(
     @Param('reviewsId', ParseIntPipe) reviewsId: number,
     @Req() req,
   ) {

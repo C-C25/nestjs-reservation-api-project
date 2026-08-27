@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
-import { stringValidationMessage } from '../../common/validation_message/stirng_validation.message.const';
+import { stringValidationMessage } from '../../common/validation_message/string_validation.message.const';
 
 export class CreateReservationDto {
   @IsDate()

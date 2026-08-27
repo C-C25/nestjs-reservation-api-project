@@ -8,7 +8,7 @@ import { catchError, Observable, tap } from 'rxjs';
 import { DataSource } from 'typeorm';
 
 @Injectable()
-export class TarnsactionIntercetor implements NestInterceptor {
+export class TransactionInterceptor implements NestInterceptor {
   constructor(private readonly datasource: DataSource) {}
 
   async intercept(

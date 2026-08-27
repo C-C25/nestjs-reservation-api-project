@@ -13,10 +13,10 @@ import {
 import { SpacesService } from './spaces.service';
 import { CreateSpaceDto } from './dto/create_space.dto';
 import { RoleEnum } from '../users/const/roles.enum.const';
-import { Role } from '../users/decorator/role.drcorator';
-import { IsPublic } from '../common/decorator/is_public.decoreator';
+import { Role } from '../users/decorator/role.decorator';
+import { IsPublic } from '../common/decorator/is_public.decorator';
 import { UpdateSpacesDto } from './dto/update.spaces.dto';
-import { SpacesPagianteDto } from './dto/spaces-paginate.dto';
+import { SpacesPaginateDto } from './dto/spaces-paginate.dto';
 
 @Controller('spaces')
 export class SpacesController {
@@ -24,7 +24,7 @@ export class SpacesController {
 
   @Get()
   @IsPublic()
-  getSpaces(@Query() query: SpacesPagianteDto) {
+  getSpaces(@Query() query: SpacesPaginateDto) {
     return this.spacesService.spacePaginate(query);
   }
 

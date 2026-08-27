@@ -18,7 +18,7 @@ export class BasicTokenGuard implements CanActivate {
 
     const token = this.authService.extractTokenFromHeader(rawToken, false);
 
-    const verifyToken = this.authService.docodedBasicToken(token);
+    const verifyToken = this.authService.decodedBasicToken(token);
 
     const user =
       await this.authService.authenticateWithEmailAndPassword(verifyToken);

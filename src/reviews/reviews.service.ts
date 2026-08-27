@@ -20,7 +20,7 @@ export class ReviewsService {
   ) {}
 
   reviewsPaginate(dto: ReviewsPaginateDto) {
-    return this.commonService.pagiante(
+    return this.commonService.paginate(
       dto,
       this.reviewRepo,
       {
@@ -33,15 +33,15 @@ export class ReviewsService {
     );
   }
 
-  async creaetReviews(userId: number, spaceId: number, dto: CreateReviewDto) {
-    const exstingReviews = await this.reviewRepo.exists({
+  async createReviews(userId: number, spaceId: number, dto: CreateReviewDto) {
+    const existsReviews = await this.reviewRepo.exists({
       where: {
         user: { id: userId },
         space: { id: spaceId },
       },
     });
 
-    if (exstingReviews) {
+    if (existsReviews) {
       throw new BadRequestException('이미 작성한 리뷰 입니다.');
     }
 

@@ -3,10 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ChatsEntity } from './entities/chats.entity';
 import { Repository } from 'typeorm';
 import { CommonService } from '../common/common.service';
-import { ChatPageinateDto } from './dto/paginate.chats.dto';
 import { UsersEntity } from '../users/entities/users.entity';
 import { RoleEnum } from '../users/const/roles.enum.const';
-import { UsersService } from '../users/users.service';
+import { ChatPaginateDto } from './dto/paginate.chats.dto';
 
 @Injectable()
 export class ChatsService {
@@ -16,8 +15,8 @@ export class ChatsService {
     private readonly commonService: CommonService,
   ) {}
 
-  chatPageinate(dto: ChatPageinateDto, user: UsersEntity) {
-    const ovrrideOptions =
+  chatPaginate(dto: ChatPaginateDto, user: UsersEntity) {
+    const overrideOptions =
       user.role === RoleEnum.ADMIN
         ? { relations: { reservation: true } }
         : {
@@ -27,10 +26,10 @@ export class ChatsService {
             relations: { reservation: true },
           };
 
-    return this.commonService.pagiante(
+    return this.commonService.paginate(
       dto,
       this.chatsRepo,
-      ovrrideOptions,
+      overrideOptions,
       'chats',
     );
   }

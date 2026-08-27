@@ -15,7 +15,7 @@ const httpRequestsTotal = new Counter({
 
 const httpRequestsDuration = new Histogram({
   name: 'http_request_duration_seconds',
-  help: 'Duratioon of HTTP requests in seconds',
+  help: 'Duration of HTTP requests in seconds',
   labelNames: ['method', 'path', 'status'],
   buckets: [0.01, 0.05, 0.1, 0.3, 0.5, 1, 2, 5],
 });

@@ -1,15 +1,11 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Code, Repository } from 'typeorm';
 import { SpacesEntity } from './entities/spaces.entity';
 import { CreateSpaceDto } from './dto/create_space.dto';
 import { UpdateSpacesDto } from './dto/update.spaces.dto';
 import { CommonService } from '../common/common.service';
-import { SpacesPagianteDto } from './dto/spaces-paginate.dto';
+import { SpacesPaginateDto } from './dto/spaces-paginate.dto';
 
 @Injectable()
 export class SpacesService {
@@ -19,8 +15,8 @@ export class SpacesService {
     private readonly commonService: CommonService,
   ) {}
 
-  async spacePaginate(dto: SpacesPagianteDto) {
-    return this.commonService.pagiante(
+  async spacePaginate(dto: SpacesPaginateDto) {
+    return this.commonService.paginate(
       dto,
       this.spaceRepo,
       {
