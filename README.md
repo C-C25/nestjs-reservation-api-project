@@ -25,7 +25,7 @@
 - **Language**: TypeScript
 - **Database**: PostgreSQL
 - **ORM**: TypeORM
-- **인증**: Passport, JWT
+- **인증**: JWT
 - **실시간 통신**: WebSocket (Socket.io)
 - **스케줄러**: @nestjs/schedule
 - **컨테이너**: Docker
