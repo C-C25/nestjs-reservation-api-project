@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -45,10 +46,12 @@ export class ReservationsController {
   }
 
   @Patch(':reservationId')
+  @UseInterceptors(TransactionInterceptor)
   patchReservation(
     @Param('reservationId', ParseIntPipe) id: number,
     @Body() dto: UpdateReservationStatusDto,
+    @QueryRunner() qr: QR,
   ) {
-    return this.reservationsService.updateStatusReservation(id, dto);
+    return this.reservationsService.updateStatusReservation(id, dto, qr);
   }
 }

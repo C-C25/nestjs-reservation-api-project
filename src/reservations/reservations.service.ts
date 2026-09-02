@@ -98,6 +98,7 @@ export class ReservationsService {
         startTime: LessThan(dto.endTime),
         endTime: MoreThan(dto.startTime),
       },
+      lock: qr ? { mode: 'pessimistic_write' } : undefined,
     });
 
     if (overlapping) {
@@ -110,16 +111,7 @@ export class ReservationsService {
       space: { id: spaceId },
     });
 
-    try {
-      return await repository.save(reservation);
-    } catch (e) {
-      if (e instanceof OptimisticLockVersionMismatchError) {
-        throw new ConflictException(
-          '다른 사용자가 동시에 예약했습니다. 다시 시도해주세요',
-        );
-      }
-      throw e;
-    }
+    return await repository.save(reservation);
   }
 
   async updateStatusReservation(
@@ -143,7 +135,19 @@ export class ReservationsService {
 
     reservation.status = dto.status;
 
-    const newReservation = await repository.save(reservation);
+    let newReservation: ReservationsEntity;
+
+    try {
+      newReservation = await repository.save(reservation);
+    } catch (e) {
+      if (e instanceof OptimisticLockVersionMismatchError) {
+        throw new ConflictException(
+          '다른 관리자가 이미 이 예약을 처리 했습니다. 다시 확인해주세요.',
+        );
+      }
+
+      throw e;
+    }
 
     if (reservation.status === ReservationStatusEnum.CONFIRMED) {
       await this.chatsService.createChatRoom(reservationId);
