@@ -14,8 +14,7 @@ import { ReservationStatusEnum } from './const/status.enum.const';
 import { OptimisticLockVersionMismatchError } from 'typeorm';
 
 describe('ReservationsService', () => {
-  // ReservationsService
-  let service: ReservationsService; // 테스트를 진행할 서비스
+  let service: ReservationsService;
   let mockRepo: any;
   let mockSpacesService: any;
   let mockChatsService: any;
@@ -23,9 +22,9 @@ describe('ReservationsService', () => {
 
   beforeEach(async () => {
     mockRepo = {
-      findOne: jest.fn(), // 가짜 findOne 겹침 체크에 쓰는것.
-      create: jest.fn(), // 가짜 생성?
-      save: jest.fn(), // 가짜로 저장?
+      findOne: jest.fn(),
+      create: jest.fn(),
+      save: jest.fn(),
     };
 
     mockSpacesService = {
@@ -50,7 +49,7 @@ describe('ReservationsService', () => {
         { provide: SpacesService, useValue: mockSpacesService },
         { provide: ChatsService, useValue: mockChatsService },
         { provide: CommonService, useValue: mockCommonService },
-      ], // 위에 전부 거짓된걸 넣고 테스트를 돌린다는건가?
+      ],
     }).compile();
 
     service = module.get<ReservationsService>(ReservationsService);
@@ -60,7 +59,6 @@ describe('ReservationsService', () => {
     expect(service).toBeDefined();
   });
 
-  // describe = 묘사하다.
   describe('createReservation', () => {
     const userId = 1;
     const spaceId = 1;
@@ -71,8 +69,7 @@ describe('ReservationsService', () => {
     };
 
     it('겹치는 예약이 없으면 정상 저장된다.', async () => {
-      // given: 각 mock이 호출됐을 때 반환할지 미리 정해둠
-      mockSpacesService.findOneSpaces.mockResolvedValue({ id: spaceId }); // 공간이 있다고 가정
+      mockSpacesService.findOneSpaces.mockResolvedValue({ id: spaceId });
       mockRepo.findOne.mockResolvedValue(null);
       mockRepo.create.mockReturnValue({
         ...dto,
@@ -81,14 +78,12 @@ describe('ReservationsService', () => {
       });
       mockRepo.save.mockResolvedValue({ id: 1, ...dto, version: 1 });
 
-      // when: 실제 서비스 메서드 호출
       const result = await service.createReservation(
         userId,
         spaceId,
         dto as any,
       );
 
-      // then: 결과와 각 mock이 예상대로 호출됐는지 확인
       expect(result).toEqual({ id: 1, ...dto, version: 1 });
       expect(mockSpacesService.findOneSpaces).toHaveBeenCalledWith(spaceId);
       expect(mockRepo.findOne).toHaveBeenCalled();
