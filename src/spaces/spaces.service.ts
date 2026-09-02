@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Code, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { SpacesEntity } from './entities/spaces.entity';
 import { CreateSpaceDto } from './dto/create_space.dto';
 import { UpdateSpacesDto } from './dto/update.spaces.dto';

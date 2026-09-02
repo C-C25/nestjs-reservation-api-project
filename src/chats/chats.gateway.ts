@@ -44,9 +44,9 @@ export class ChatsGateway
   async handleConnection(socket: Socket & { user: UsersEntity }) {
     console.log(`on connect called: ${socket.id}`);
 
-    const heades = socket.handshake.headers;
+    const headers = socket.handshake.headers;
 
-    const rawToken = heades.authorization!;
+    const rawToken = headers.authorization!;
 
     if (!rawToken) {
       // 토큰이 없다면 연결을 끊는다.
