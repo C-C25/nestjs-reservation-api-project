@@ -24,6 +24,7 @@ import { CommonService } from '../common/common.service';
 import { ReservationPaginateDto } from './dto/paginate_reservation.dto';
 import { UsersEntity } from '../users/entities/users.entity';
 import { RoleEnum } from '../users/const/roles.enum.const';
+import { SpacesEntity } from '../spaces/entities/spaces.entity';
 
 @Injectable()
 export class ReservationsService {
@@ -90,7 +91,14 @@ export class ReservationsService {
   ) {
     const repository = this.getRepository(qr);
 
-    await this.spacesService.findOneSpaces(spaceId);
+    if (qr) {
+      await qr.manager.findOne(SpacesEntity, {
+        where: { id: spaceId },
+        lock: { mode: 'pessimistic_write' },
+      });
+    } else {
+      await this.spacesService.findOneSpaces(spaceId);
+    }
 
     const overlapping = await repository.findOne({
       where: {
@@ -98,7 +106,6 @@ export class ReservationsService {
         startTime: LessThan(dto.endTime),
         endTime: MoreThan(dto.startTime),
       },
-      lock: qr ? { mode: 'pessimistic_write' } : undefined,
     });
 
     if (overlapping) {
