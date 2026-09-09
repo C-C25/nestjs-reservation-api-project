@@ -18,6 +18,31 @@ jobs:
     # 이 job을 어떤 환경(가상 머신)에서 실행할지, GitHub이 매 개념과 비슷한 원리다.
     runs-on: ubuntu-latest
 
+    # GitHub Actions 에서 DB를 띄우는 방법
+    # services: 로컬에서는 docker compose up -d 로 Postgres를 미리 띄워두고 테스트를 했지만.
+    # CI 환경(매번 새로 생기는 가정 머신)에서는 그 컨테이너가 없으니 워크 플로우 안에서 직접 띄어줘야 한다.
+    services: # job 실행 중에 같이 띄울 부가 서버스(컨테이너)들. 여기 정의하면 job 스탭들이 자동으로 켜진다.
+      postgres: # 서비스이름 임의로 지어도 되지만 관례상 이미지 이름과 맞춘다.
+        image: postgres:15 # 로컬 환경에서 썼던 image 버전과 맞춘다.
+        env: # 컨테이너 환경변수. docker-compose.yaml 에 environment 와 같은 개념
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres_test
+        ports:
+          - 5432:5432
+        # 헬스체크 설정. Postgres가 완전히 켜져서 연결 받을 준비가 됐는지 주기적으로 확인해줘야 한다.
+        # 컨테이너가 시작됐다 는 것과 연결 받을 준비가 됐다 는건 다른 타이밍이라, 아래 체크 없이 바로 테스트를 돌리면 실패할수 있다.
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      # Redis
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+
     # 순서대로 실행할 명령러들.
     steps:
       - name: 코드 체크아웃
@@ -34,3 +59,22 @@ jobs:
       - name: 유닛 테스트
         # 테스트 코드를 실행.
         run: yarn test
+
+      # E2E 테스트 실행하는 step
+      - name: E2E 테스트 실행
+        run: yarn test:e2e
+        # 환경변수 직접 주입 .env.test 파일을 그대로 쓰는게 아니라, 워크폴로우 파일 안에서 직접 값을 넘겨줄 수 있다.
+        # dotenv/ConfigModule은 토봉 이미 설정된 환경변수가 있으면 그걸 우선으로 하고 파링은 보조 수단으로 동작한다.
+        env:
+          NODE_ENV: test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          DB_NAME: postgres_test
+          # ${{}} JWT 시크릿 키 값은 워크폴루우 파일에 저장 되면 안된다.
+          JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+          HASH_ROUND: 10
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
