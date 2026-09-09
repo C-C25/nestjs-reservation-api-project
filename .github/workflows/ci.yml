@@ -1,0 +1,36 @@
+# 이 워크 플로우의 이름 GitHub Actions 탭에서 노출될 이름
+name: CI
+
+# 트리거 설정 언제 이 워크플로우를 실행할지
+on:
+  # Main 브랜치에 push 될때
+  push:
+    branches: [main]
+
+  # main으로 향하는 PR이 열리거나 업데이트 할때 이건 알아두는게 좋다고 함.
+  pull_request:
+    branches: [main]
+
+# 실행할 작업들
+jobs:
+  # 지금은 test라는 이름 job 하나만 만들었다. 이름은 임의로 지어도 되기는 한다. test는 관례적인 이름
+  test:
+    # 이 job을 어떤 환경(가상 머신)에서 실행할지, GitHub이 매 개념과 비슷한 원리다.
+    runs-on: ubuntu-latest
+
+    # 순서대로 실행할 명령러들.
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 설치
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 의존성 설치
+        run: yarn install --frozen-lockfile
+
+      - name: 유닛 테스트
+        # 테스트 코드를 실행.
+        run: yarn test
