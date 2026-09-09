@@ -17,6 +17,7 @@ jobs:
   test:
     # 이 job을 어떤 환경(가상 머신)에서 실행할지, GitHub이 매 개념과 비슷한 원리다.
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     # GitHub Actions 에서 DB를 띄우는 방법
     # services: 로컬에서는 docker compose up -d 로 Postgres를 미리 띄워두고 테스트를 했지만.
