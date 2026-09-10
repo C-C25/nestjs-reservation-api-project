@@ -107,10 +107,10 @@ jobs:
         # 'EOF' 따옴표를 준 이유 따옴표가 없으면 ${{}} 같은 변수가 로컬 GitHub Actions에서 먼저 해석될수도 있다.
         # 따옴표를 붙이면 "이 안의 내용은 그대로" 해석 하지 말고 서버로 그대로 보내라 라는 뜻이다.
         run: |
-          ssh ${{ secrets.EC2_USERNAME }}${{ secrets.Ec2_HOST }} << 'EOF'
-            cd -/nestjs-reservation-api-project
+          ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
+            cd ~/nestjs-reservation-api-project
             git pull origin main
-            npm install
-            npm run build
+            yarn install
+            yarn run build
             pm2 restart nestjs-app
           EOF
