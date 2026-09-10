@@ -79,3 +79,38 @@ jobs:
           HASH_ROUND: 10
           REDIS_HOST: localhost
           REDIS_PORT: 6379
+
+  # 어제 배운 내용을 토대로 위에 CI 가 실행 된 이후 아래 CD 가 실행 된다. 자동화
+  deploy:
+    needs: test # test job이 성공해야만 이 job이 시작된다. 이게 없으면 test 와 deploy 가 동시에 실행 되려 고 한다.
+    runs-on: ubuntu-latest
+
+    # **PR을 열 떄도 이 워크폴로우가 도는데, PR 단계 에서는 절대 배포되면 안된다.**
+    # 진짜 main에 병합/push된 경우에만 배포 하도록 막는거다.
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: SSH 키 등록
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+        # ssh-keyscan으로 미리 이 서버는 신뢰할 수 있다 고 등록해두는거다.
+        # Are you sure you want to continue connecting (yes/no)? 라고 뜬다면 처음 접속할때 확인하는 보안 절차
+      - name: 서버 known_hosts 등록
+        run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: 서버에 배포
+        # | yaml 에서 여러 줄 문자열을 그대로 유지 할때 쓰는 문법. | 다음 줄 부터 들여쓰기 된 내용 전체가 하나의 명령어 불록이 된다.
+        # ssh ${{계정@호스트}} << 'EOF' 이건 Here Document 라는 셀 문법이다. << 'EOF' 부터 EOF 까지 사이의 모든 줄을,
+        # SSH 로 접급한 원격 서버에서 순서대로 실행 해라 는 뜻이다.
+        # 'EOF' 따옴표를 준 이유 따옴표가 없으면 ${{}} 같은 변수가 로컬 GitHub Actions에서 먼저 해석될수도 있다.
+        # 따옴표를 붙이면 "이 안의 내용은 그대로" 해석 하지 말고 서버로 그대로 보내라 라는 뜻이다.
+        run: |
+          ssh ${{ secrets.EC2_USERNAME }}${{ secrets.Ec2_HOST }} << 'EOF'
+            cd -/nestjs-reservation-api-project
+            git pull origin main
+            npm install
+            npm run build
+            pm2 restart nestjs-app
+          EOF
