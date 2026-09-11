@@ -6,10 +6,16 @@ on:
   # Main 브랜치에 push 될때
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
 
   # main으로 향하는 PR이 열리거나 업데이트 할때 이건 알아두는게 좋다고 함.
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
 
 # 실행할 작업들
 jobs:
