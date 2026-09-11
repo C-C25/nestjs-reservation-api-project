@@ -131,6 +131,16 @@ Prometheus + Grafana를 활용해 운영 환경 모니터링 환경을 구성했
 - 원인: 충돌 빈도가 낮은 서비스에서는 낙관적 락이 더 적합
 - 해결: @VersionColumn()이 정상 동작 하는 것을 확인하고 낙관적 락으로 전환
 
+### 락 전략 재설계 - 겹침 방지와 상태 변경 충돌 분리
+
+- 문제: 낙관적 락(VersionColumn)만으로는 동시 예약 요청 시 겹치는 시간대가 이중 저장되는 문제 발생 (E2E 테스트로 발견)
+- 원인: 낙관적 락은 기존 row의 수정 충돌만 감지하며, 신규 생성되는 두 row 간의 겹침은 애초에 감지 대상이 아님
+- 해결:
+  - 겹침 방지 -> space row 자체에 pessimistic_write 락 적용 (신규 예약 생성 시)
+  - 상태 변경 충돌 방지 -> 기존 낙관적 락(VersionColumn) 유지 (예약 상태 수정 시)
+  - 문제 유형에 따라 락 전략을 다르게 적용
+- 관련: [Issue #1](https://github.com/C-C25/nestjs-reservation-api-project/issues/1)
+
 ### RefreshTokenGuard @IsPublic() 누락으로 인한 인증 에러
 
 - 문제: @IsPublic() 누락 으로 토큰 갱신 엔드포인트 에서 인증 에러 발생
