@@ -96,7 +96,7 @@ export class AuthService {
     );
 
     if (!storedToken || storedToken !== token) {
-      throw new UnauthorizedException(`유호하지 않은 RefreshToken입니다.`);
+      throw new UnauthorizedException(`유효하지 않은 RefreshToken입니다.`);
     }
 
     return this.accessSignToken({
