@@ -6,6 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import { REDIS_CLIENT } from '../redis/redis.module';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { execPath } from 'process';
+import e from 'express';
 
 jest.mock('bcrypt');
 
@@ -274,6 +276,151 @@ describe('AuthService', () => {
       expect(() => service.refreshVerifyToken('expired-token')).toThrow(
         UnauthorizedException,
       );
+    });
+  });
+
+  describe('rotateAccessToken', () => {
+    it('refreshToken으로 accessToken을 재발급한다.', async () => {
+      const refreshToken = 'refresh-token';
+      const decoded = {
+        sub: 1,
+        email: 'test@email.com',
+        tokenType: 'refresh',
+      };
+
+      mockJwtService.verify.mockReturnValue(decoded);
+      mockRedisClient.get.mockResolvedValue(refreshToken);
+      mockJwtService.sign.mockReturnValue('new-access-token');
+
+      const result = await service.rotateAccessToken(refreshToken);
+
+      expect(result).toEqual('new-access-token');
+    });
+
+    it('토큰이 refreshToken이 아니라면 UnauthorizedException', async () => {
+      const decodeToken = {
+        sub: 1,
+        email: 'test@email.com',
+        tokenType: 'access',
+      };
+
+      mockJwtService.verify.mockReturnValue(decodeToken);
+
+      await expect(service.rotateAccessToken('access-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('Redis에 저장된 refreshToken이 없으면 UnauthorizedException', async () => {
+      const decoded = {
+        sub: 1,
+        email: 'test@email.com',
+        tokenType: 'refresh',
+      };
+
+      mockJwtService.verify.mockResolvedValue(decoded);
+      mockRedisClient.get.mockResolvedValue(null);
+
+      await expect(service.rotateAccessToken('refresh-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('Redis에 저장값은 있지만 받은 토큰이 다른 경우 UnauthorizedException', async () => {
+      const decoded = {
+        sub: 1,
+        email: 'test@email.com',
+        tokenType: 'refresh',
+      };
+
+      mockJwtService.verify.mockResolvedValue(decoded);
+      mockRedisClient.get.mockResolvedValue('stored-refresh-token'); // Redis 에 저장된 값
+
+      // 잘못 들어오게 된 값
+      await expect(service.rotateAccessToken('wrong-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+  });
+
+  describe('rotateRefreshToken', () => {
+    it('refreshToken으로 새 RefreshToken을 발급해 Redis에 저장한다.', async () => {
+      const refreshToken = 'refresh-token';
+      const decoded = {
+        sub: 1,
+        email: 'test@email.com',
+        tokenType: 'refresh',
+      };
+
+      mockJwtService.verify.mockReturnValue(decoded);
+      mockRedisClient.get.mockResolvedValue(refreshToken);
+      mockJwtService.sign.mockReturnValue('new-refresh-token');
+
+      const result = await service.rotateRefreshToken(refreshToken);
+
+      expect(mockRedisClient.set).toHaveBeenCalledWith(
+        `refresh_token_${decoded.sub}`,
+        'new-refresh-token',
+        'EX',
+        60 * 60 * 2,
+      );
+      expect(result).toEqual('new-refresh-token');
+    });
+
+    it('토큰이 refreshToken이 아니라면 UnauthorizedException', async () => {
+      const decoded = {
+        sub: 1,
+        email: 'test@email.com',
+        tokenType: 'access',
+      };
+
+      mockJwtService.verify.mockResolvedValue(decoded);
+
+      await expect(service.rotateRefreshToken('access-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('Redis에 저장된 refreshToken이 없다면 UnauthorizedException', async () => {
+      const decoded = {
+        sub: 1,
+        email: 'test@email.com',
+        tokenType: 'refresh',
+      };
+
+      mockJwtService.verify.mockResolvedValue(decoded);
+
+      await expect(service.rotateRefreshToken('refresh-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('Redis에 저장되어 있지만 토큰이 잘못된 경우 UnauthorizedException', async () => {
+      const decoded = {
+        sub: 1,
+        email: 'test@email.com',
+        tokenType: 'refresh',
+      };
+
+      mockJwtService.verify.mockResolvedValue(decoded);
+      mockRedisClient.get.mockResolvedValue('stored-refresh-token');
+
+      await expect(service.rotateRefreshToken('wrong-token')).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+  });
+
+  describe('logout', () => {
+    it('로그아웃 한다.', async () => {
+      const user = { id: 1 };
+
+      const result = await service.logout(user.id);
+
+      expect(mockRedisClient.del).toHaveBeenCalledWith(
+        `refresh_token_${user.id}`,
+      );
+      expect(result).toEqual({ message: '로그아웃 되었습니다.' });
     });
   });
 });
