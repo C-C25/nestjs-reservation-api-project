@@ -45,7 +45,7 @@ export class AuthController {
 
   @IsPublic()
   @Post('register/email')
-  registerPost(@Body() dto: RegisterAuthDto) {
+  postRegister(@Body() dto: RegisterAuthDto) {
     return this.authService.registerWithEmail(dto);
   }
 
@@ -53,13 +53,12 @@ export class AuthController {
   @Post('login/email')
   @UseGuards(BasicTokenGuard)
   @HttpCode(200)
-  loginPost(@Request() req) {
+  postLogin(@Request() req) {
     return this.authService.loginUser(req.user);
   }
 
   @Post('logout/email')
-  async logout(@Request() req) {
-    console.log(`logout userId:`, req.user);
-    return this.authService.logout(req.user.id);
+  async postLogout(@Request() req) {
+    return await this.authService.logout(req.user.id);
   }
 }
