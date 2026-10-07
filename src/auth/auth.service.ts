@@ -190,7 +190,7 @@ export class AuthService {
     const passOk = await bcrypt.compare(user.password, existingUser.password);
 
     if (!passOk)
-      throw new BadRequestException('이메일 또는 비밀번호가 틀렸습니다..');
+      throw new BadRequestException('이메일 또는 비밀번호가 틀렸습니다.');
 
     return existingUser;
   }
