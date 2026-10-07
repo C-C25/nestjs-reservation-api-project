@@ -14,8 +14,6 @@ import {
   ENV_DB_PASSWORD_KEY,
   ENV_DB_PORT_KEY,
   ENV_DB_USERNAME_KEY,
-  ENV_REDIS_HOST_KEY,
-  ENV_REDIS_PORT_KEY,
 } from './common/const/env-keys-values.const';
 import { CommonModule } from './common/common.module';
 import { UsersModule } from './users/users.module';
@@ -24,7 +22,7 @@ import { ReservationsModule } from './reservations/reservations.module';
 import { ChatsModule } from './chats/chats.module';
 import { MessagesModule } from './messages/messages.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guard/bearer_token.guard';
 import { RoleGuard } from './reservations/const/role.guard';
 import { ReviewsModule } from './reviews/reviews.module';
@@ -33,6 +31,7 @@ import { LogMiddleware } from './common/middleware/log.middleware';
 import { RedisModule } from './redis/redis.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { MetricInterceptor } from './common/interceptor/metrics.interceptor';
+import { HttpExceptionFilter } from './common/exceptions-filter/http.exceptions-filter';
 
 @Module({
   imports: [
@@ -76,6 +75,10 @@ import { MetricInterceptor } from './common/interceptor/metrics.interceptor';
     {
       provide: APP_INTERCEPTOR,
       useClass: MetricInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
     },
   ],
 })
